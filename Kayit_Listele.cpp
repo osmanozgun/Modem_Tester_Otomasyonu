@@ -34,7 +34,7 @@ TabKayitListele::TabKayitListele(QWidget *parent) : QWidget(parent) {
     table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
     table->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Fixed);
     table->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Fixed);
-
+    table->horizontalHeader()->setSectionResizeMode(5, QHeaderView::Fixed);
     table->horizontalHeader()->resizeSection(0, 100); // Seri No
     table->horizontalHeader()->resizeSection(1, 80); // EEPROM
     table->horizontalHeader()->resizeSection(2, 50);  // RF

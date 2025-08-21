@@ -274,7 +274,7 @@ void TabTestBaslat::seriVeriOku() {
         // Seri numarası yakala
         if (text.contains("Link-layer address:", Qt::CaseInsensitive)) {
             QString serialfound = text.right(9); 
-            QString cleanedSerial = serialfound.remove(".");
+            QString cleanedSerial = serialfound.remove(".").toUpper();
             QString logText;
             seriNoEdit->setText(cleanedSerial);
 
