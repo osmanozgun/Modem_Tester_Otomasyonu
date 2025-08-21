@@ -11,8 +11,10 @@ TabKayitListele::TabKayitListele(QWidget *parent) : QWidget(parent) {
 
     // 🔍 Arama kutusu
     QHBoxLayout *searchLayout = new QHBoxLayout();
+    QLabel *info = new QLabel("Güncellemek için çift tıklayınız");
     QLabel *searchLabel = new QLabel("Aranacak Seri No:");
     searchEdit = new QLineEdit();
+    searchLayout->addWidget(info);
     searchEdit->setFixedWidth(200);
     searchLayout->addStretch();
     searchLayout->addWidget(searchLabel);
@@ -23,8 +25,8 @@ TabKayitListele::TabKayitListele(QWidget *parent) : QWidget(parent) {
     // 📊 Tablo
     table = new QTableWidget();
     table->setFont(QFont("Arial", 11));
-    table->setColumnCount(5);
-    table->setHorizontalHeaderLabels({"Seri No", "EEPROM", "RF", "Network", "Sonuç"});
+    table->setColumnCount(6);
+    table->setHorizontalHeaderLabels({"Seri No", "EEPROM", "RF", "Network", "Sonuç", "Acıklama"});
 
     // Sabit sütun boyutları ve manuel genişlikler
     table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
@@ -33,11 +35,12 @@ TabKayitListele::TabKayitListele(QWidget *parent) : QWidget(parent) {
     table->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Fixed);
     table->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Fixed);
 
-    table->horizontalHeader()->resizeSection(0, 180); // Seri No
-    table->horizontalHeader()->resizeSection(1, 100); // EEPROM
-    table->horizontalHeader()->resizeSection(2, 70);  // RF
+    table->horizontalHeader()->resizeSection(0, 100); // Seri No
+    table->horizontalHeader()->resizeSection(1, 80); // EEPROM
+    table->horizontalHeader()->resizeSection(2, 50);  // RF
     table->horizontalHeader()->resizeSection(3, 80);  // Network
-    table->horizontalHeader()->resizeSection(4, 150); // Sonuç
+    table->horizontalHeader()->resizeSection(4, 80); // Sonuç
+    table->horizontalHeader()->resizeSection(5, 550); // Sonuç
 
     table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     table->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -101,10 +104,12 @@ TabKayitListele::TabKayitListele(QWidget *parent) : QWidget(parent) {
     QSplitter *mainSplitter = new QSplitter(Qt::Horizontal);
     mainSplitter->addWidget(leftWidget);
     mainSplitter->addWidget(rightSplitter);
-    mainSplitter->setHandleWidth(0);
+    mainSplitter->setHandleWidth(4);
     mainSplitter->setChildrenCollapsible(false);
-    mainSplitter->setStretchFactor(0, 6);
-    mainSplitter->setStretchFactor(1, 5);
+    mainSplitter->setStretchFactor(0, 10); // tabloya %90 alan ver
+    mainSplitter->setStretchFactor(1, 2);  // sağ tarafa %10 alan ver
+    
+
 
     mainLayout->addWidget(mainSplitter);
 
@@ -138,9 +143,10 @@ TabKayitListele::TabKayitListele(QWidget *parent) : QWidget(parent) {
 void TabKayitListele::tabloyuDoldur(const QString &filter) {
     QSqlQuery query;
     if (filter.isEmpty()) {
-        query.exec("SELECT seri_no, eeprom, rf, network, result FROM modem_testleri");
+        query.exec("SELECT seri_no, eeprom, rf, network, result, aciklama FROM modem_testleri");
     } else {
-        query.prepare("SELECT seri_no, eeprom, rf, network, result FROM modem_testleri WHERE seri_no LIKE :filter");
+        query.prepare("SELECT seri_no, eeprom, rf, network, result, aciklama "
+                      "FROM modem_testleri WHERE seri_no LIKE :filter");
         query.bindValue(":filter", "%" + filter + "%");
         query.exec();
     }
@@ -149,7 +155,7 @@ void TabKayitListele::tabloyuDoldur(const QString &filter) {
     int row = 0;
     while (query.next()) {
         table->insertRow(row);
-        for (int col = 0; col < 5; ++col) {
+        for (int col = 0; col < 6; ++col) {  // <-- 5 yerine 6 sütun
             QString text;
             QTableWidgetItem *item;
 
@@ -167,7 +173,7 @@ void TabKayitListele::tabloyuDoldur(const QString &filter) {
             item->setTextAlignment(Qt::AlignCenter);
             item->setFlags(item->flags() & ~Qt::ItemIsEditable);
 
-            if (col == 4) {
+            if (col == 4) { // result sütunu
                 if (text == "PASS")
                     item->setForeground(QBrush(Qt::darkGreen));
                 else if (text == "FAIL")
@@ -179,6 +185,7 @@ void TabKayitListele::tabloyuDoldur(const QString &filter) {
         row++;
     }
 }
+
 void TabKayitListele::guncellePenceresiAc(QTableWidgetItem *item) {
     int row = item->row();
     if (row < 0) return;
@@ -271,7 +278,7 @@ void TabKayitListele::guncellePenceresiAc(QTableWidgetItem *item) {
             }
         }
     });
-    dialog->exec();
+    dialog->show();
 }
 void TabKayitListele::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
@@ -304,7 +311,6 @@ void TabKayitListele::seciliLoguSil() {
 void TabKayitListele::verileriGoster() {
     int row = table->currentRow();
     if (row < 0) return;
-
     QString seriNo = table->item(row, 0)->text();
 
     QSqlQuery query1;
@@ -315,11 +321,9 @@ void TabKayitListele::verileriGoster() {
     } else {
         aciklamaViewer->setPlainText("Açıklama bulunamadı.");
     }
-
     QSqlQuery query2;
     query2.prepare("SELECT log FROM modem_loglari WHERE seri_no = :seri_no ORDER BY id ASC");
     query2.bindValue(":seri_no", seriNo);
-
     QString allLogs;
 
     if (query2.exec()) {
