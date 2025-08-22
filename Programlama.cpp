@@ -14,46 +14,36 @@
 #include <QFont>
 
 TabModemProgramla::TabModemProgramla(QWidget *parent) : QWidget(parent) {
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-
-    QHBoxLayout *multiPortLayout = new QHBoxLayout();
-    QLabel *portLabel = new QLabel("Seri Portlar:");
-    multiPortLayout->addWidget(portLabel);
-
-    for (int i = 0; i < 4; ++i) {
-        QCheckBox *check = new QCheckBox(QString("P%1").arg(i+1));
-        QComboBox *combo = new QComboBox();
-        combo->setFixedWidth(130);
-        combo->setEnabled(false);
-
-        connect(check, &QCheckBox::toggled, combo, &QComboBox::setEnabled);
-        portChecks.append(check);
-        portCombos.append(combo);
-
-        QVBoxLayout *v = new QVBoxLayout();
-        v->addWidget(check);
-        v->addWidget(combo);
-        multiPortLayout->addLayout(v);
-    }
-
-    QPushButton *taraBtn = new QPushButton("Port Tara");
-    multiPortLayout->addWidget(taraBtn);
-    mainLayout->addLayout(multiPortLayout);
-
-    QPushButton *btnProgramla = new QPushButton("Seçilenleri Programla");
-    mainLayout->addWidget(btnProgramla, 0, Qt::AlignCenter);
-
-    outputEdit = new QPlainTextEdit();
-    outputEdit->setReadOnly(true);
-    outputEdit->setFont(QFont("Courier New", 10));
-    mainLayout->addWidget(outputEdit);
-
-    connect(taraBtn, &QPushButton::clicked, this, &TabModemProgramla::portlariTara);
-    connect(btnProgramla, &QPushButton::clicked, this, &TabModemProgramla::modemiProgramla);
-
-    portlariTara();
+   QVBoxLayout *mainLayout = new QVBoxLayout(this);
+   QHBoxLayout *multiPortLayout = new QHBoxLayout();
+   QLabel *portLabel = new QLabel("Seri Portlar:");
+   multiPortLayout->addWidget(portLabel);
+   for (int i = 0; i < 4; ++i) {
+       QCheckBox *check = new QCheckBox(QString("P%1").arg(i+1));
+       QComboBox *combo = new QComboBox();
+       combo->setFixedWidth(130);
+       combo->setEnabled(false);
+       connect(check, &QCheckBox::toggled, combo, &QComboBox::setEnabled);
+       portChecks.append(check);
+       portCombos.append(combo);
+       QVBoxLayout *v = new QVBoxLayout();
+       v->addWidget(check);
+       v->addWidget(combo);
+       multiPortLayout->addLayout(v);
+   }
+   QPushButton *taraBtn = new QPushButton("Port Tara");
+   multiPortLayout->addWidget(taraBtn, 0, Qt::AlignBottom);
+   mainLayout->addLayout(multiPortLayout);
+   QPushButton *btnProgramla = new QPushButton("Seçilenleri Programla");
+   mainLayout->addWidget(btnProgramla, 0, Qt::AlignCenter);
+   outputEdit = new QPlainTextEdit();
+   outputEdit->setReadOnly(true);
+   outputEdit->setFont(QFont("Courier New", 10));
+   mainLayout->addWidget(outputEdit);
+   connect(taraBtn, &QPushButton::clicked, this, &TabModemProgramla::portlariTara);
+   connect(btnProgramla, &QPushButton::clicked, this, &TabModemProgramla::modemiProgramla);
+   portlariTara();
 }
-
 void TabModemProgramla::portlariTara() {
     QDir devDir("/dev");
     QStringList filters = {"ttyUSB*", "ttyACM*"};
