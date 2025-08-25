@@ -71,7 +71,7 @@ private:
     void durBlink();
     bool RFTesti(const QStringList &logs);
 
-    // UI Components
+    // UI Components    
     QComboBox *portCombo;
     QLineEdit *seriNoEdit;
     QComboBox *minRssiCombo;
@@ -91,7 +91,6 @@ private:
     QSerialPort *port;
     QByteArray readBuffer;
     QStringList logLines;
-
     // Test State
     bool eeprom_ok;
     bool rf_ok;

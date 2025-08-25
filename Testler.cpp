@@ -89,7 +89,7 @@ TabTestBaslat::TabTestBaslat(QWidget *parent) : QWidget(parent) {
 
     // SERİ NO GİRİŞİ
     QHBoxLayout *seriKaydetLayout = new QHBoxLayout();
-    QLabel *seriLabel = new QLabel("Seri No:");
+    QLabel *seriLabel = new QLabel("Seri No için modemi resleyiniz:");
     seriNoEdit = new QLineEdit();
     seriNoEdit->setFixedWidth(200);
     seriKaydetLayout->addStretch();
