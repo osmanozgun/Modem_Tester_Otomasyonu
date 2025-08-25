@@ -136,6 +136,7 @@ TabKayitListele::TabKayitListele(QWidget *parent) : QWidget(parent) {
         } else {
             QMessageBox::warning(this, "Hata", "Açıklama kaydedilirken bir hata oluştu", QMessageBox::Ok);
         }
+        tabloyuDoldur();
     });
 
     tabloyuDoldur();
